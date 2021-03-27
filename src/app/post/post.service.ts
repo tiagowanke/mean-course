@@ -27,7 +27,8 @@ export class PostService {
                 title: post.title,
                 content: post.content,
                 id: post._id,
-                imagePath: post.imagePath
+                imagePath: post.imagePath,
+                creator: post.creator
               }
             }),
             maxPosts: postData.maxPosts
@@ -35,6 +36,7 @@ export class PostService {
         }))
       )
       .subscribe((transformedPostsData) => {
+        console.log(transformedPostsData);
         this.posts = transformedPostsData.posts;
         this.postsUpdated.next({ posts: [...this.posts], postCount: transformedPostsData.maxPosts });
       });
@@ -44,8 +46,8 @@ export class PostService {
     return this.postsUpdated.asObservable();
   }
 
-  getPost(id: string): Observable<{_id: string; title: string; content: string, imagePath: string}> {
-    return this.httpClient.get<{_id: string; title: string; content: string, imagePath: string}>('http://localhost:3000/api/posts/' + id);
+  getPost(id: string): Observable<{ _id: string; title: string; content: string, imagePath: string, creator: string }> {
+    return this.httpClient.get<{ _id: string; title: string; content: string, imagePath: string, creator: string }>('http://localhost:3000/api/posts/' + id);
   }
 
   addPost(title: string, content: string, image: File): void {
