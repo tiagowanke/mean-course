@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, Observer } from 'rxjs';
 import { AuthData } from './auth-data.model';
 
 @Injectable({ providedIn: 'root' })
@@ -34,9 +34,10 @@ export class AuthService {
   createUser(email: string, password: string): void {
     const auth: AuthData = { email: email, password: password };
     this.httpClient.post('http://localhost:3000/api/users/signup', auth)
-      .subscribe(response => {
-        console.log(response);
-      });
+      .subscribe(
+        _ => this.router.navigate(['/']),
+        _ => this.authStatusListener.next(false)
+      );
   }
 
   login(email: string, password: string): void {
@@ -54,7 +55,8 @@ export class AuthService {
           this.saveAuthData(this.token, expirationDate, this.userId);
           this.router.navigate(['/']);
         }
-      });
+      },
+      _ => this.authStatusListener.next(false));
   }
 
   logout() {
